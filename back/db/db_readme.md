@@ -1,0 +1,1 @@
+migrate create -ext sqlite -dir migrations -seq create_users_table
