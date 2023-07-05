@@ -1,6 +1,9 @@
 package user
 
-import "time"
+import (
+	"reflect"
+	"time"
+)
 
 type User struct {
 	ID                uint64
@@ -19,8 +22,15 @@ type User struct {
 
 func Change(user_id uint64, initiator_token, field_name string, value interface{}) error {
 	// check for initiator right
+	/*
+		Rajout des compte admin plus tard
+	*/
 	if false { // if not the right
 		return ERR_FORBIDEN_OPPERATION
+	}
+
+	if !reflect.DeepEqual(reflect.TypeOf(value), reflect.String) {
+		return ERR_BAD_VALUE_TYPE
 	}
 
 	switch field_name {
@@ -30,13 +40,11 @@ func Change(user_id uint64, initiator_token, field_name string, value interface{
 
 	case "password":
 
-	case "first_name":
-
-	case "last_name":
+	case "first_name", "last_name":
 
 	case "date_of_birth":
 
-	case "avatar_image_path":
+	case "avatar_image_path": // peutetre cree une methode particulieur
 
 	case "nickname":
 
@@ -45,7 +53,7 @@ func Change(user_id uint64, initiator_token, field_name string, value interface{
 	case "is_public_profile":
 
 	default:
-		return ERR_
+		return NoFieldName(field_name)
 	}
 	return nil
 }
