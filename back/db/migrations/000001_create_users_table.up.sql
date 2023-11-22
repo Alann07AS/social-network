@@ -13,8 +13,7 @@ CREATE TABLE IF NOT EXISTS user (
     about_me TEXT,
     is_public_profile TEXT,
     created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE (first_name, last_name)
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Create the trigger "set_nickname_default"
@@ -31,11 +30,12 @@ CREATE TRIGGER IF NOT EXISTS set_random_avatar_default
 AFTER INSERT ON user
 BEGIN
     UPDATE user
-    SET avatar_image_path = CASE RANDOM() % 3
-        WHEN 0 THEN 'img/avatar/sunflower.jpeg'
-        WHEN 1 THEN 'img/avatar/poit.jpeg'
-        WHEN 2 THEN 'img/avatar/sun.jpeg'
-        ELSE ''
+    SET avatar_image_path = 
+        CASE ROUND(RANDOM(), 0) % 3
+            WHEN 0 THEN 'img/avatar/sunflower.jpeg'
+            WHEN 1 THEN 'img/avatar/poit.jpeg'
+            WHEN 2 THEN 'img/avatar/sun.jpeg'
+            ELSE 'none'
         END
     WHERE ID = NEW.ID AND NEW.avatar_image_path IS NULL;
 END;
@@ -45,6 +45,6 @@ CREATE TRIGGER IF NOT EXISTS update_at_user
 AFTER INSERT ON user
 BEGIN
     UPDATE user
-    SET updated_at = CURRENT_TIMESTAMP;
+    SET updated_at = CURRENT_TIMESTAMP
     WHERE ID = NEW.ID IS NULL;
 END;

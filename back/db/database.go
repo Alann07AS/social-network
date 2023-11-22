@@ -5,35 +5,37 @@ import (
 	"fmt"
 	"log"
 
+	"social/db/user"
+
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/sqlite3"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var db *sql.DB
+var database *sql.DB
 
 func DbInit() {
-	// Database connection string
+	// database connection string
 	dbConnStr := "db/database.db"
 
 	// Create a new SQLite database connection
 	var err error
-	db, err = sql.Open("sqlite3", dbConnStr)
+	database, err = sql.Open("sqlite3", dbConnStr)
 	if err != nil {
 		log.Fatalf("Failed to connect to the database: %v", err)
 	}
-	defer db.Close()
+	// defer database.Close()
 
 	// Create a new instance of the SQLite database driver
-	driver, err := sqlite3.WithInstance(db, &sqlite3.Config{})
+	driver, err := sqlite3.WithInstance(database, &sqlite3.Config{})
 	if err != nil {
 		log.Fatalf("Failed to create SQLite database driver instance: %v", err)
 	}
 
 	// Create a new migrate instance with the SQLite driver
 	m, err := migrate.NewWithDatabaseInstance(
-		"file:///home/student/alann/social-network/back/db/migrations",
+		"file://db/migrations",
 		"sqlite3", driver)
 	if err != nil {
 		log.Fatalf("Failed to create migrate instance: %v", err)
@@ -45,6 +47,8 @@ func DbInit() {
 	}
 
 	fmt.Println("Migrations applied successfully!")
-	// time.Sleep(100 * time.Second)
 	// Perform other database operations...
+
+	// init all sub package who need to acces database
+	user.CRUD_Init(database) // user
 }
